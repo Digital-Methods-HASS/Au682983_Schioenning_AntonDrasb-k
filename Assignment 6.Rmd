@@ -1,0 +1,88 @@
+---
+title: "6:W43: Practicing functions with Gapminder"
+author: "Anton Drasbæk"
+date: "31st of October 2022"
+output: html_document
+---
+
+Load Packages and Gapminder data
+```{r}
+library(tidyverse)
+library(gapminder)
+```
+
+# Task 1
+
+### Problem Statement
+Define a defensive function that calculates the Gross Domestic Product of a nation from the data available in the gapminder dataset. You can use the population and GDPpercapita columns for it. Using that function, calculate the GDP of Denmark in the following years: 1967, 1977, 1987, 1997, 2007, and 2017.
+
+### My Solution
+
+**Inspect data**
+```{r}
+summary(gapminder)
+```
+
+
+**Create defensive GDP function**
+```{r}
+get_gdp <- function(data, selected_country, selected_year) {
+  
+  # Find the relevant row in the data
+  data <- data[which(data$country == selected_country & data$year == selected_year), ]
+  
+  # Print GDP if the row exists. If not, print an error message explaining what went wrong
+  ifelse(nrow(data) == 1, paste("GDP for", selected_country, "in", selected_year, "was", round(data$gdpPercap*data$pop), "in international dollars"), "Error: Missing Country and/or Year")
+}
+```
+
+
+**Calculate GDP for selected years for Denmark using the function**
+```{r}
+# Make list of relevant years
+years = c(1967, 1977, 1987, 1997, 2007, 2017)
+
+# Loop that prints the GDP for all the years for Denmark
+for (i in 1:length(years)) {
+  print(get_gdp(data = gapminder, selected_country = "Denmark", selected_year = years[i]))
+}
+```
+
+We get an error because of a year that is missing, which our function identifies and prints an appropriate response to.
+
+
+# Task 2
+
+### Problem Statement
+Write a script that loops over each country in the gapminder dataset, tests whether the country starts with a ‘B’ , and prints out whether the life expectancy is smaller than 50, between 50 and 70, or greater than 70. 
+
+
+### My Solution
+**I base my solution on the assumption that we want to evaluate based on the average LifeExp for a country over the available years in the data**
+```{r}
+# get average life expectancy for each country
+avg_lifeexp_data <- gapminder %>% 
+  group_by(country) %>% 
+  summarize(avg_lifeExp = mean(lifeExp))
+
+
+# initialize loop running over each country
+for (i in 1:nrow(avg_lifeexp_data)){
+  
+  # identify whether final statement should say country starts with B or not
+  start_with_b <- ifelse(grepl('^B', avg_lifeexp_data$country[i]), "starts with B", "does not start with B")
+  
+  # identify life expectancy and save appropriate statement to variable
+  life_expectancy <- ifelse(avg_lifeexp_data$avg_lifeExp[i] < 50, "smaller than 50.", 
+                            ifelse(avg_lifeexp_data$avg_lifeExp[i] > 75, "greater than 75.", "between 50 and 70."))
+  
+  # connect parts to form the full, coherent sentence
+  full_sentence <- paste(avg_lifeexp_data$country[i], start_with_b, "and the life expectancy is", life_expectancy)
+  
+  # print sentence
+  print(full_sentence)
+}
+
+```
+
+Output seems to conform with the conditions in the problem statement.
