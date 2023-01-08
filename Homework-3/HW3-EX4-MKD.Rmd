@@ -1,0 +1,39 @@
+---
+title: "HW3 Exercise 4"
+author: "Anton Drasbæk"
+date: "9/5/2022"
+output: html_document
+---
+Load Packages and Data
+```{r}
+library(tidyverse)
+
+kings <- read.csv("./data/danish_monarchs.csv")
+```
+
+Create duration of rule column
+```{r}
+# create column
+kings <- kings %>% 
+  mutate("days_ruling" = (reign_end - reign_start)*365)
+
+# add extra day for every four years ruled to account for leap year
+kings$days_ruling <- kings$days_ruling + round(((kings$days_ruling/365)/4), 0)
+```
+
+Calculating mean and median duration rule
+```{r}
+mean(na.omit(kings$days_ruling))
+median(na.omit(kings$days_ruling))
+```
+Mean number of rule was 7045 days (19.3 years)
+Mediuan number of rule was 6027 days (16.5 years)
+
+Finding top three monarchs ruling the longest and how long they ruled
+```{r}
+head(kings[order(kings$days_ruling, decreasing = TRUE),], 3)
+```
+From this we see that the top 3 longest rulers are:
+1. Christian 4. (21915 days, 60 years)
+2. Erik 7. af Pommern (16071 days, 44 years)
+3. Christian 9. (15706 days, 43 years)
