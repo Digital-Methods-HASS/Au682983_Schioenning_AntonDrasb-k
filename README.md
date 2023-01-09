@@ -1,1 +1,1 @@
-# au682983_Schioenning_AntonDrasbaek
+# GitHub Repository for Homework Assignments by Anton Drasbæk Schiønning in Cultural Data Sciecne
